@@ -9,19 +9,33 @@ const io = new Server(server , {
         origin: "*"
     }
 })
-type DrawLine = {
+type DrawLineProps = {
     color : string
     prevPoint : Point | null
     currentPoint : Point
 }
 
 type Point = {x : number , y : number}
+/* 
+    * socket => everyone but the sender
+    * io => everyone in the server on same PORT
+*/
+
 io.on('connection' , (socket) =>{
     // the client establish a connection for draw line
-    socket.on('draw-line' , ({prevPoint , currentPoint , color} : DrawLine)=>{
+    console.log("connection")
+    // listening on messages being sent back to socket server 
+    socket.on('draw-line' , ({prevPoint , currentPoint , color} : DrawLineProps)=>{
         socket.broadcast.emit('draw-line' , {prevPoint , currentPoint , color})
+    })
+    socket.on('disconnect', function() {
+        console.log('Client disconnected.');
+    });
+    socket.on('clear' , ()=>{
+        io.emit('clear')
     })
 })
 server.listen(3001 , ()=>{
-    console.log('listening on 3001')
+    // socket listening no need for client to be acitve to perform this action
+    console.log('✔️ Server listening on port 3001')
 })
