@@ -19,6 +19,8 @@ type Point = {x : number , y : number}
 /* 
     * socket => everyone but the sender
     * io => everyone in the server on same PORT
+    * canvas state should not be sever side throttling problem *size of message is growing exponentially 
+    * PROBLEM: if joining late new user (subscriber won't received old canvas state)
 */
 
 io.on('connection' , (socket) =>{
