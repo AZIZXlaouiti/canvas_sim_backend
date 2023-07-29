@@ -20,7 +20,7 @@ type Point = {x : number , y : number}
     * socket => everyone but the sender
     * io => everyone in the server on same PORT
     * canvas state should not be sever side throttling problem *size of message is growing exponentially 
-    * PROBLEM: if joining late new user (subscriber won't received old canvas state)
+    * PROBLEM: if joining late, new user (subscriber won't received old canvas state)
 */
 
 io.on('connection' , (socket) =>{
@@ -35,6 +35,13 @@ io.on('connection' , (socket) =>{
     });
     socket.on('clear' , ()=>{
         io.emit('clear')
+    })
+    socket.on('client-ready' , ()=>{
+        socket.broadcast.emit('get-canvas-state')
+    })
+    socket.on('canvas-state', (state)=>{
+        // send state to the new connected client 
+        socket.broadcast.emit('canvas-state-server' , state)
     })
 })
 server.listen(3001 , ()=>{
